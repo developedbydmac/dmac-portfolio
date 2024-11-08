@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Your Name</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Same Navigation as index.html -->
+    <nav class="navbar">
+        <!-- Copy navigation from index.html -->
+    </nav>
+
+    <main class="blog-page">
+        <header class="blog-header">
+            <h1>Blog</h1>
+            <p>Thoughts, learnings, and insights about web development</p>
+        </header>
+
+        <div class="blog-filters">
+            <div class="search-box">
+                <input type="text" id="blog-search" placeholder="Search posts...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="category-filters">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="web-dev">Web Dev</button>
+                <button class="filter-btn" data-category="tutorial">Tutorials</button>
+                <button class="filter-btn" data-category="tech">Tech</button>
+            </div>
+        </div>
+
+        <div class="blog-grid">
+            <article class="blog-card">
+                <div class="blog-image">
+                    <img src="images/blog1.jpg" alt="Blog Post 1">
+                    <div class="blog-category">Web Dev</div>
+                </div>
+                <div class="blog-content">
+                    <header class="blog-meta">
+                        <time>Dec 1, 2023</time>
+                        <span class="read-time">5 min read</span>
+                    </header>
+                    <h2>How to Build a Responsive Website</h2>
+                    <p>Learn the fundamentals of creating responsive websites using modern CSS techniques...</p>
+                    <footer class="blog-footer">
+                        <div class="tags">
+                            <span class="tag">CSS</span>
+                            <span class="tag">Responsive Design</span>
+                        </div>
+                        <a href="blog-post.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </footer>
+                </div>
+            </article>
+            <!-- Add more blog posts -->
+        </div>
+
+        <div class="pagination">
+            <button class="prev-page"><i class="fas fa-chevron-left"></i></button>
+            <div class="page-numbers">
+                <span class="current">1</span>
+                <a href="#">2</a>
+                <a href="#">3</a>
+            </div>
+            <button class="next-page"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Same Footer as index.html -->
+    <footer class="footer">
+        <!-- Copy footer from index.html -->
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/blog.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developed By D Mac - Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <a href="index.html">Your Name</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="about.html">About</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Hi, I'm <span class="highlight">Your Name</span></h1>
+            <h2 class="subtitle">Full Stack Developer</h2>
+            <p class="description">
+                I build exceptional websites, applications, and everything in between.
+            </p>
+            <div class="cta-buttons">
+                <a href="projects.html" class="btn primary">View My Work</a>
+                <a href="#contact" class="btn secondary">Get In Touch</a>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/yourusername" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/yourusername" target="_blank">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://twitter.com/yourusername" target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Projects Preview -->
+    <section class="featured-section">
+        <div class="section-header">
+            <h2>Featured Projects</h2>
+            <a href="projects.html" class="view-all">View All Projects <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="featured-grid">
+            <div class="featured-card">
+                <div class="project-image">
+                    <img src="images/project1.jpg" alt="Project 1">
+                    <div class="project-overlay">
+                        <div class="project-details">
+                            <h3>Project Name</h3>
+                            <p>Brief description of the project</p>
+                            <div class="project-links">
+                                <a href="#" class="project-link">Live Demo</a>
+                                <a href="#" class="project-link">Code</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add 1-2 more featured projects -->
+        </div>
+    </section>
+
+    <!-- Latest Blog Posts -->
+    <section class="blog-preview">
+        <div class="section-header">
+            <h2>Latest Posts</h2>
+            <a href="blog.html" class="view-all">View All Posts <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="blog-grid">
+            <article class="blog-card">
+                <div class="blog-image">
+                    <img src="images/blog1.jpg" alt="Blog Post 1">
+                </div>
+                <div class="blog-content">
+                    <div class="blog-tags">
+                        <span class="tag">Web Development</span>
+                    </div>
+                    <h3>Blog Post Title</h3>
+                    <p>Brief excerpt from the blog post...</p>
+                    <div class="blog-footer">
+                        <span class="date">Dec 1, 2023</span>
+                        <span class="read-time">5 min read</span>
+                    </div>
+                </div>
+            </article>
+            <!-- Add 1-2 more blog previews -->
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2>Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <p>Have a question or want to work together? Feel free to reach out!</p>
+                <div class="contact-social">
+                    <a href="mailto:your.email@example.com">
+                        <i class="fas fa-envelope"></i> your.email@example.com
+                    </a>
+                    <a href="https://linkedin.com/in/yourusername" target="_blank">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+            <form id="contact-form" class="contact-form">
+                <div class="form-group">
+                    <input type="text" id="name" required>
+                    <label for="name">Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" required>
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-group">
+                    <textarea id="message" required></textarea>
+                    <label for="message">Message</label>
+                </div>
+                <button type="submit" class="btn primary">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2023 Your Name. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="about.html">About</a>
+                <a href="projects.html">Projects</a>
+                <a href="blog.html">Blog</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>

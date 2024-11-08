@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | Your Name</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <a href="index.html">Developd By D Mac</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="#" class="active">Projects</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="projects-page">
+        <header class="page-header">
+            <h1>Featured Projects</h1>
+            <p>Highlighting some of my best work</p>
+        </header>
+
+        <div class="featured-project">
+            <div class="project-media">
+                <img src="images/featured-project.jpg" alt="Featured Project">
+                <div class="project-links">
+                    <a href="#" class="project-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        Live Demo
+                    </a>
+                    <a href="#" class="project-link">
+                        <i class="fab fa-github"></i>
+                        Source Code
+                    </a>
+                </div>
+            </div>
+            <div class="project-info">
+                <h2>E-Commerce Dashboard</h2>
+                <p class="project-description">
+                    A comprehensive dashboard for managing online stores. Features include real-time analytics,
+                    inventory management, and sales reporting.
+                </p>
+                <div class="tech-stack">
+                    <h3>Technologies Used</h3>
+                    <div class="tech-tags">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MongoDB</span>
+                        <span class="tech-tag">AWS</span>
+                    </div>
+                </div>
+                <div class="project-highlights">
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li>Real-time data visualization</li>
+                        <li>Automated inventory tracking</li>
+                        <li>Multi-store management</li>
+                        <li>Custom reporting tools</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="projects-section">
+            <h2 class="section-title">Other Projects</h2>
+            <div class="projects-timeline">
+                <div class="timeline-item" data-category="web">
+                    <div class="timeline-content">
+                        <div class="project-preview">
+                            <img src="images/project1.jpg" alt="Project 1">
+                            <div class="preview-overlay">
+                                <div class="preview-links">
+                                    <a href="#" class="preview-link">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="preview-link">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-info">
+                            <h3>Task Management App</h3>
+                            <p>A collaborative task tracking application with real-time updates.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">Vue.js</span>
+                                <span class="tech-tag">Firebase</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-category="mobile">
+                    <div class="timeline-content">
+                        <div class="project-preview">
+                            <img src="images/project2.jpg" alt="Project 2">
+                            <div class="preview-overlay">
+                                <div class="preview-links">
+                                    <a href="#" class="preview-link">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="preview-link">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-info">
+                            <h3>Fitness Tracking App</h3>
+                            <p>Mobile application for tracking workouts and nutrition.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">React Native</span>
+                                <span class="tech-tag">GraphQL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-projects">
+            <h2 class="section-title">Experimental Projects</h2>
+            <div class="mini-grid">
+                <div class="mini-card" data-category="design">
+                    <h3>UI Component Library</h3>
+                    <p>A collection of reusable UI components.</p>
+                    <a href="#" class="card-link">
+                        <i class="fab fa-github"></i>
+                        View Project
+                    </a>
+                </div>
+
+                <div class="mini-card" data-category="web">
+                    <h3>Weather Dashboard</h3>
+                    <p>Real-time weather monitoring tool.</p>
+                    <a href="#" class="card-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        Live Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/projects.js"></script>
+</body>
+</html>
