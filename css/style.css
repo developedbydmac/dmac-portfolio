@@ -27,11 +27,15 @@ body {
 /* Navigation */
 .navbar {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: var(--nav-height);
-    background-color: var(--background-color);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
     z-index: 1000;
+}
+
+.navbar.hide {
+    transform: translateY(-100%); /* Moves navbar off-screen */
 }
 
 .nav-content {

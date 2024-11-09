@@ -3,86 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me - Your Name</title>
+    <title>Resume - D Mac</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
     <link rel="stylesheet" href="css/about.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Same Navigation as index.html -->
     <nav class="navbar">
-        <!-- Copy navigation from index.html -->
+        <div class="nav-content">
+            <div class="logo">
+                <a href="index.html">Developed By D Mac</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="about.html">About</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <!-- <li><a href="blog.html">Blog</a></li> -->
+                <li><a href="contact.html">Contact</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div> <!-- Your existing navigation -->
     </nav>
 
-    <main class="about-page">
-        <section class="about-hero">
-            <div class="about-content">
-                <div class="about-text">
-                    <h1>About Me</h1>
-                    <p class="lead">Full Stack Developer based in [Your Location]</p>
-                    <p class="bio">
-                        I'm a passionate developer who loves creating beautiful and functional web applications. 
-                        With [X] years of experience in web development, I focus on building scalable and 
-                        user-friendly solutions.
-                    </p>
+    <main class="resume-page">
+        <section class="resume-header">
+            <div class="resume-contact">
+                <h1>D Mac</h1>
+                <p class="resume-title">Full Stack Developer</p>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> email@example.com</p>
+                    <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Your City, State</p>
                 </div>
-                <div class="about-image">
-                    <img src="images/profile.jpg" alt="Your Name">
+                <div class="social-links">
+                    <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://portfolio.com" target="_blank"><i class="fas fa-globe"></i></a>
                 </div>
             </div>
         </section>
 
-        <section class="skills-section">
-            <h2>Skills & Technologies</h2>
+        <section class="resume-summary">
+            <h2>Professional Summary</h2>
+            <p>
+                Dedicated Site Reliability Engineer with expertise in designing and maintaining 
+                highly available, scalable, and performant cloud infrastructure. Proven track 
+                record of implementing robust monitoring, automated deployments, and proactive 
+                system reliability strategies.
+            </p>
+        </section>
+        
+        <section class="resume-skills">
+            <h2>Technical Skills</h2>
             <div class="skills-grid">
                 <div class="skill-category">
-                    <h3>Frontend</h3>
-                    <ul class="skill-list">
-                        <li><i class="fab fa-html5"></i> HTML5</li>
-                        <li><i class="fab fa-css3-alt"></i> CSS3</li>
-                        <li><i class="fab fa-js"></i> JavaScript</li>
-                        <li><i class="fab fa-react"></i> React</li>
+                    <h3>Cloud & Infrastructure</h3>
+                    <ul>
+                        <li>AWS / GCP / Azure</li>
+                        <li>Kubernetes</li>
+                        <li>Docker</li>
+                        <li>Terraform</li>
+                        <li>CloudFormation</li>
                     </ul>
                 </div>
                 <div class="skill-category">
-                    <h3>Backend</h3>
-                    <ul class="skill-list">
-                        <li><i class="fab fa-node"></i> Node.js</li>
-                        <li><i class="fas fa-database"></i> MongoDB</li>
-                        <li><i class="fas fa-server"></i> Express</li>
+                    <h3>Monitoring & Observability</h3>
+                    <ul>
+                        <li>Prometheus</li>
+                        <li>Grafana</li>
+                        <li>ELK Stack</li>
+                        <li>CloudWatch</li>
+                        <li>DataDog</li>
                     </ul>
                 </div>
                 <div class="skill-category">
-                    <h3>Tools & Others</h3>
-                    <ul class="skill-list">
-                        <li><i class="fab fa-git-alt"></i> Git</li>
-                        <li><i class="fab fa-docker"></i> Docker</li>
-                        <li><i class="fab fa-aws"></i> AWS</li>
+                    <h3>DevOps & Automation</h3>
+                    <ul>
+                        <li>Jenkins</li>
+                        <li>GitLab CI/CD</li>
+                        <li>Ansible</li>
+                        <li>Shell Scripting</li>
+                        <li>Python Automation</li>
                     </ul>
                 </div>
             </div>
+        </section>
+        
+        <section class="resume-experience">
+            <h2>Professional Experience</h2>
+            <div class="experience-timeline">
+                <div class="job">
+                    <div class="job-header">
+                        <h3>Site Reliability Engineer</h3>
+                        <p class="job-company">Tech Innovations Inc.</p>
+                        <p class="job-date">Jan 2022 - Present</p>
+                    </div>
+                    <ul class="job-responsibilities">
+                        <li>Designed and implemented cloud-native infrastructure using Kubernetes</li>
+                        <li>Reduced system downtime by 60% through proactive monitoring and automated healing</li>
+                        <li>Developed comprehensive monitoring and alerting strategies</li>
+                        <li>Implemented infrastructure-as-code using Terraform and Ansible</li>
+                        <li>Optimized CI/CD pipelines for improved deployment reliability</li>
+                    </ul>
+                </div>
+                <div class="job">
+                    <div class="job-header">
+                        <h3>DevOps Engineer</h3>
+                        <p class="job-company">Digital Solutions LLC</p>
+                        <p class="job-date">Jun 2019 - Dec 2021</p>
+                    </div>
+                    <ul class="job-responsibilities">
+                        <li>Automated infrastructure provisioning and configuration management</li>
+                        <li>Implemented containerization strategies</li>
+                        <li>Developed monitoring dashboards and incident response protocols</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="resume-certifications">
+            <h2>Certifications</h2>
+            <ul>
+                <li>AWS Certified SysOps Administrator</li>
+                <li>Google Cloud Professional Cloud Engineer</li>
+                <li>Certified Kubernetes Administrator (CKA)</li>
+            </ul>
         </section>
 
-        <section class="experience-section">
-            <h2>Experience</h2>
-            <div class="experience-timeline">
-                <div class="timeline-item">
-                    <div class="timeline-date">2023 - Present</div>
-                    <div class="timeline-content">
-                        <h3>Senior Developer</h3>
-                        <h4>Company Name</h4>
-                        <p>Description of your role and responsibilities...</p>
-                    </div>
-                </div>
-                <!-- Add more experience items -->
-            </div>
-        </section>
+        <div class="resume-actions">
+            <a href="#" class="btn primary" download>Download Resume</a>
+            <a href="#" class="btn secondary">Print Resume</a>
+        </div>
     </main>
 
-    <!-- Same Footer as index.html -->
     <footer class="footer">
-        <!-- Copy footer from index.html -->
+        <div class="footer-content">
+            <p>&copy; 2025 DevelopedByDMac. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="about.html">About</a>
+                <a href="projects.html">Projects</a>
+                <!-- <a href="blog.html">Blog</a> -->
+                <a href="contact.html">Contact</a>
+            </div>
+        </div> <!-- Your existing footer -->
     </footer>
 
     <script src="js/main.js"></script>
