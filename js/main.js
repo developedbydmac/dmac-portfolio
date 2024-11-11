@@ -49,4 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
     });
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing mobile navigation code...
+
+    // View Projects CTA Button
+    const viewProjectsBtn = document.getElementById('view-projects-btn');
+    if (viewProjectsBtn) {
+        viewProjectsBtn.addEventListener('click', function(event) {
+            // Optional: Add analytics or tracking
+            console.log('CTA: Navigating to Projects');
+
+            // Optional: Add visual feedback
+            this.classList.add('btn-clicked');
+
+            // Navigate to projects page
+            window.location.href = 'projects.html';
+        });
+    }
+});
 });

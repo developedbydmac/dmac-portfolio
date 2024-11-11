@@ -434,3 +434,18 @@ body {
     margin: 5px;
     transition: all 0.3s ease;
 }
+
+.btn-clicked {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn.primary {
+    transition: all 0.3s ease;
+}
+
+.btn.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
