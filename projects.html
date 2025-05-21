@@ -1,76 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | DevelopedByDMac</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dark-mode.css">
-    <link rel="stylesheet" href="css/projects.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects - D Mac</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <a href="index.html">Developed By D Mac</a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="about.html">About</a></li>
-                <li><a href="projects.html">Projects</a></li>
-                <li>
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
-            <div class="burger">
-                <div class="line1"></div>
-                <div class="line2"></div>
-                <div class="line3"></div>
-            </div>
-        </div>
+  <header>
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Developed by D Mac Logo">
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="resume.html">Resume</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
     </nav>
+  </header>
 
-    <main class="projects-page">
-        <header class="page-header">
-            <h1>Site Reliability Engineering Projects</h1>
-            <p>Demonstrating scalability, reliability, and infrastructure innovation</p>
-        </header>
-    
-        <div class="featured-project">
-            <h2>Kubernetes Cluster Automation</h2>
-            <p>Developed a fully automated Kubernetes cluster deployment system using Terraform and Ansible, 
-            reducing infrastructure setup time by 75% and ensuring consistent, reproducible environments.</p>
-        </div>
-    
-        <div class="projects-section">
-            <h2>Monitoring and Observability Solutions</h2>
-            <p>Created comprehensive monitoring frameworks using Prometheus, Grafana, and custom alerting 
-            mechanisms to provide real-time insights into system performance and potential issues.</p>
-        </div>
-    
-        <div class="side-projects">
-            <h2>CI/CD Pipeline Optimization</h2>
-            <p>Implemented advanced CI/CD strategies using GitLab CI and Docker, improving deployment 
-            frequency and reducing mean time to recovery (MTTR).</p>
-        </div>
-    </main>
+  <main>
+    <h1>Projects</h1>
+    <div class="project-list">
+      <div class="project">
+        <h2>Kubernetes Chaos Engineering</h2>
+        <p>Stress-tested microservices using LitmusChaos. Monitored results with Prometheus and Grafana.</p>
+      </div>
+      <div class="project">
+        <h2>Terraform AWS Infrastructure</h2>
+        <p>Provisioned VPC, EC2, S3 using Terraform with modular best practices.</p>
+      </div>
+      <div class="project">
+        <h2>CI/CD Pipeline for React App</h2>
+        <p>Integrated GitHub Actions, Docker Hub, and automated deployments to EC2.</p>
+      </div>
+    </div>
+  </main>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2025 DevelopedByDMac. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="about.html">About</a>
-                <a href="projects.html">Projects</a>
-                <!-- <a href="blog.html">Blog</a> -->
-                <!-- <a href="contact.html">Contact</a> -->
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/main.js"></script>
-    <script src="js/dark-mode.js"></script>
-    <script src="js/projects.js"></script>
+  <footer>
+    <p>&copy; 2025 Developed by D Mac</p>
+  </footer>
 </body>
 </html>
+

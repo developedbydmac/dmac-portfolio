@@ -1,105 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - DevelopedByDMac</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dark-mode.css">
-    <link rel="stylesheet" href="css/blog.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog - D Mac</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <a href="index.html">Developed By D Mac</a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="about.html">About</a></li>
-                <li><a href="projects.html">Projects</a></li>
-                <!-- <li><a href="blog.html">Blog</a></li> -->
-                <!-- <li><a href="contact.html">Contact</a></li> -->
-                <li>
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
-            <div class="burger">
-                <div class="line1"></div>
-                <div class="line2"></div>
-                <div class="line3"></div>
-            </div>
-        </div>
+  <header>
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Developed by D Mac Logo">
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="resume.html">Resume</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
     </nav>
+  </header>
 
-    <main class="blog-page">
-        <header class="blog-header">
-            <h1>Blog</h1>
-            <p>Thoughts, learnings, and insights about web development</p>
-        </header>
+  <main>
+    <h1>Blog</h1>
+    <p>Thoughts, learnings, and updates from my journey.</p>
 
-        <!-- Removed search box -->
-        <div class="blog-filters">
-            <div class="category-filters">
-                <button class="filter-btn active" data-category="all">All</button>
-                <button class="filter-btn" data-category="web-dev">Web Dev</button>
-                <button class="filter-btn" data-category="tutorial">Tutorials</button>
-                <button class="filter-btn" data-category="tech">Tech</button>
-            </div>
-        </div>
+    <ul class="blog-list">
+      <li><a href="https://medium.com/@yourhandle/chaos-testing-your-first-kubernetes-cluster-abc123" target="_blank">Chaos Testing Your First Kubernetes Cluster</a></li>
+      <li><a href="https://medium.com/@yourhandle/ci-cd-with-github-actions-and-docker-xyz789" target="_blank">CI/CD with GitHub Actions and Docker</a></li>
+    </ul>
+  </main>
 
-        <div class="blog-grid">
-            <article class="blog-card">
-                <div class="blog-image">
-                    <img src="images/blog1.jpg" alt="Blog Post 1">
-                    <div class="blog-category">Web Dev</div>
-                </div>
-                <div class="blog-content">
-                    <header class="blog-meta">
-                        <time>Dec 1, 2023</time>
-                        <span class="read-time">5 min read</span>
-                    </header>
-                    <h2>How to Build a Responsive Website</h2>
-                    <p>Learn the fundamentals of creating responsive websites using modern CSS techniques...</p>
-                    <footer class="blog-footer">
-                        <div class="tags">
-                            <span class="tag">CSS</span>
-                            <span class="tag">Responsive Design</span>
-                        </div>
-                        <a href="blog-post.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </footer>
-                </div>
-            </article>
-            <!-- Add more blog posts -->
-        </div>
-
-        <div class="pagination">
-            <button class="prev-page"><i class="fas fa-chevron-left"></i></button>
-            <div class="page-numbers">
-                <span class="current">1</span>
-                <a href="#">2</a>
-                <a href="#">3</a>
-            </div>
-            <button class="next-page"><i class="fas fa-chevron-right"></i></button>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2025 DevelopedByDMac. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="about.html">About</a>
-                <a href="projects.html">Projects</a>
-                <!-- <a href="blog.html">Blog</a> -->
-                <!-- <a href="contact.html">Contact</a> -->
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/main.js"></script>
-    <script src="js/dark-mode.js"></script>
-    <script src="js/blog.js"></script>
+  <footer>
+    <p>&copy; 2025 Developed by D Mac</p>
+  </footer>
 </body>
 </html>
