@@ -7,18 +7,21 @@ body {
   
   header {
     background-color: #0A1A2F;
-    padding: 1em 2em;
+    padding: 1.5em 1em;
     display: flex;
-    align-items: center; /* vertically centers logo + nav */
-    justify-content: space-between;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
   
+  
   .logo img {
-    width: 120px; /* change to your preferred size */
+    width: 160px;
     height: auto;
+    max-width: 100%;
     display: block;
   }
+  
   
   nav {
     margin-top: 1em;
