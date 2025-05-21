@@ -67,3 +67,202 @@ body {
     color: #A5FFD6;
   }
   
+  .hero {
+    text-align: center;
+    margin: 2em auto;
+    max-width: 800px;
+  }
+  
+  .hero p {
+    color: #A5FFD6;
+    font-size: 1.2em;
+    margin-top: 1em;
+  }
+  
+  .previews {
+    margin-top: 3em;
+    text-align: center;
+  }
+  
+  .preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2em;
+    margin-top: 2em;
+  }
+  
+  .card {
+    background-color: #12233a;
+    padding: 1.5em;
+    border-radius: 10px;
+    width: 260px;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+  }
+  
+  .card h3 {
+    color: #2DB184;
+  }
+  
+  .card a {
+    display: inline-block;
+    margin-top: 1em;
+    color: #A5FFD6;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+  }
+  
+
+  .video-intro {
+    text-align: center;
+    margin: 2em 0;
+  }
+  
+  .video-intro h2 {
+    color: #2DB184;
+    margin-bottom: 1em;
+  }
+  
+
+  .timeline {
+    background-color: #12233a;
+    padding: 2em;
+    color: #fff;
+  }
+  
+  .timeline h2 {
+    text-align: center;
+    color: #2DB184;
+    margin-bottom: 1em;
+  }
+  
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+  
+  .timeline-item {
+    background-color: #0A1A2F;
+    padding: 1em;
+    border-left: 4px solid #2DB184;
+  }
+  
+
+  .about-me {
+    text-align: center;
+    padding: 2em;
+    background-color: #0A1A2F;
+    color: #fff;
+  }
+  
+  .profile-photo {
+    width: 150px;
+    border-radius: 50%;
+    margin-bottom: 1em;
+  }
+  
+  .testimonial {
+    background-color: #12233a;
+    padding: 2em;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .testimonial blockquote {
+    font-style: italic;
+    margin: 0 auto;
+    max-width: 600px;
+  }
+  
+  .testimonial cite {
+    display: block;
+    margin-top: 1em;
+    color: #A5FFD6;
+  }
+  
+  .contact {
+    background-color: #0A1A2F;
+    padding: 2em;
+    color: #fff;
+    text-align: center;
+    border-top: 2px solid #2DB184;
+  }
+  
+  .contact h2 {
+    color: #2DB184;
+    margin-bottom: 1em;
+  }
+  
+  .contact a {
+    color: #A5FFD6;
+    text-decoration: none;
+  }
+  .contact a:hover {
+    color: #2DB184;
+  }
+  
+  .resume-summary, .skills-section, .work-preview {
+    padding: 2em;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1em;
+    background: #12233a;
+    padding: 1em;
+    border-radius: 10px;
+    color: #fff;
+  }
+  
+  .job-snippet {
+    background-color: #0A1A2F;
+    border-left: 4px solid #2DB184;
+    padding: 1em;
+    margin-bottom: 1em;
+    border-radius: 6px;
+  }
+  
+  .experience-link {
+    margin-top: 1em;
+    font-weight: bold;
+  }
+  
+  .experience-link a {
+    color: #A5FFD6;
+    text-decoration: none;
+  }
+  
+  .experience-link a:hover {
+    color: #2DB184;
+  }
+  
+  .job-snippet h3 a {
+    color: #A5FFD6;
+    text-decoration: none;
+  }
+  
+  .job-snippet h3 a:hover {
+    color: #2DB184;
+  }
+  
+  .job-snippet h3 a {
+    color: #A5FFD6;
+    text-decoration: none;
+  }
+  
+  .job-snippet h3 a:hover {
+    color: #2DB184;
+  }
+  

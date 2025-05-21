@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resume - D Mac</title>
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
   <header>
     <div class="logo">
-      <img src="assets/images/logo.png" alt="Developed by D Mac Logo">
+      <a href="index.html">
+        <img src="assets/images/logo.png" alt="Developed by D Mac Logo">
+      </a>
     </div>
     <nav>
       <a href="index.html">Home</a>
@@ -20,30 +23,90 @@
   </header>
 
   <main>
-    <section class="intro">
-      <h1>Resume</h1>
-      <p>Download full version: <a href="assets/DMacOpsResume25.pdf" target="_blank">View PDF</a></p>
+    <section class="resume-summary">
+      <h1>Professional Summary</h1>
+      <p>
+        Passionate and performance-driven Site Reliability Engineer with a strong foundation in cloud infrastructure, automation, and DevOps principles. I thrive on solving complex system problems and architecting scalable solutions. My journey began with curiosity and evolved into a mission to make systems faster, safer, and smarter. Whether it's automating CI/CD pipelines or deploying Kubernetes at scale, I bring resilience and reliability to everything I build.
+      </p>
+      <p>
+        My approach is driven by consistency, best practices, and a love for learning. I specialize in simplifying the complex, mentoring peers, and delivering impactful results with automation, observability, and cutting-edge tooling.
+      </p>
     </section>
 
-    <section class="resume-content">
-      <h2>Professional Summary</h2>
-      <p>Site Reliability Engineer with a passion for automating, scaling, and monitoring systems. Experience in cloud-native deployments, infrastructure as code, and continuous improvement practices.</p>
-
-      <h2>Skills</h2>
-      <ul>
-        <li>Cloud: AWS, Azure</li>
-        <li>Tools: Docker, Kubernetes, Terraform</li>
-        <li>Languages: Python, Bash, YAML</li>
-        <li>CI/CD: GitHub Actions, Jenkins</li>
-      </ul>
-
-      <h2>Experience</h2>
-      <p>See detailed roles: <a href="experience/job1.html">Job 1</a> | <a href="experience/job2.html">Job 2</a> | <a href="experience/job3.html">Job 3</a></p>
+    <section class="skills-section">
+      <h2>🧰 Technical Skills</h2>
+      <div class="skills-grid">
+        <div><strong>Cloud:</strong> AWS, Azure</div>
+        <div><strong>Containers:</strong> Docker, Kubernetes</div>
+        <div><strong>IaC:</strong> Terraform, Ansible</div>
+        <div><strong>Languages:</strong> Python, Bash, YAML</div>
+        <div><strong>Monitoring:</strong> Grafana, Prometheus, ELK</div>
+        <div><strong>CI/CD:</strong> GitHub Actions, Jenkins</div>
+        <div><strong>Version Control:</strong> Git, GitHub</div>
+        <div><strong>Databases:</strong> PostgreSQL, MongoDB</div>
+      </div>
     </section>
+
+    <section class="work-preview">
+        <h2>💼 Work Experience</h2>
+      
+        <div class="job-snippet">
+          <h3>
+            <a href="experience/job1-live-nation.html">Venue Network Reliability Specialist – Live Nation</a>
+          </h3>
+          <p>Optimized WiFi for 150+ access points, ensuring reliability for ticketing, POS, and 20K+ event attendees.</p>
+        </div>
+      
+        <div class="job-snippet">
+          <h3>
+            <a href="experience/job2-long-beverage.html">Technical/User Support Specialist – Long Beverage</a>
+          </h3>
+          <p>Managed Linux systems, reduced onboarding time 40%, and automated IT processes via scripting.</p>
+        </div>
+      
+        <div class="job-snippet">
+          <h3>
+            <a href="experience/job3-lexis-nexis.html">Senior QA Automation Engineer – Lexis Nexis</a>
+          </h3>
+          <p>Built CI/CD automation, transitioned testing to Cypress/Postman, cut regression time by 75%.</p>
+        </div>
+      
+        <div class="job-snippet">
+          <h3>
+            <a href="experience/job4-chickfila.html">QA Automation Engineer – Chick-fil-A</a>
+          </h3>
+          <p>Deployed Terraform in AWS, reduced CI/CD bottlenecks, and led observability rollouts.</p>
+        </div>
+      
+        <div class="job-snippet">
+          <h3>
+            <a href="experience/job5-ibm.html">Software Engineer Apprentice – IBM</a>
+          </h3>
+          <p>Hit 98% API test coverage, built regression framework, and accelerated onboarding via API docs.</p>
+        </div>
+      </section>
+      
+      
   </main>
+
+  <section class="contact">
+    <h2>📬 Let's Connect</h2>
+    <div class="contact-icons">
+      <a href="mailto:developedbydmac@gmail.com" title="Email">
+        <i class="fas fa-envelope fa-3x"></i>
+      </a>
+      <a href="https://linkedin.com/in/daquanmcdaniel/" target="_blank" title="LinkedIn">
+        <i class="fab fa-linkedin fa-3x"></i>
+      </a>
+      <a href="https://github.com/developedbydmac" target="_blank" title="GitHub">
+        <i class="fab fa-github fa-3x"></i>
+      </a>
+    </div>
+  </section>
 
   <footer>
     <p>&copy; 2025 Developed by D Mac</p>
   </footer>
 </body>
 </html>
+
