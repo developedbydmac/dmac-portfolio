@@ -268,4 +268,24 @@ body {
   .job-snippet h3 a:hover {
     color: #2DB184;
   }
+
+
+  .music {
+    background-color: #12233a;
+    padding: 2em;
+    border-radius: 10px;
+    margin: 2em auto;
+    text-align: center;
+    color: #A5FFD6;
+  }
+  
+  .music h2 {
+    color: #2DB184;
+    margin-bottom: 0.5em;
+  }
+  .music p {
+    font-style: italic;
+    margin-bottom: 1em;
+  }
+  
   
