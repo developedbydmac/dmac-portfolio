@@ -39,6 +39,42 @@ body {
   main {
     padding: 2em;
     text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Blog specific styles */
+  .blog-list {
+    max-width: 800px;
+    margin: 2em auto;
+    text-align: left;
+    list-style: none;
+    padding: 0;
+  }
+
+  .blog-list li {
+    background-color: #12233a;
+    margin: 1em 0;
+    padding: 1.5em;
+    border-radius: 10px;
+    border-left: 4px solid #2DB184;
+    transition: transform 0.2s;
+  }
+
+  .blog-list li:hover {
+    transform: translateX(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .blog-list a {
+    color: #A5FFD6;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 500;
+  }
+
+  .blog-list a:hover {
+    color: #2DB184;
   }
   
   .intro h1 {
@@ -203,6 +239,27 @@ body {
     color: #2DB184;
     margin-bottom: 1em;
   }
+
+  .contact-icons {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    flex-wrap: wrap;
+  }
+
+  .contact-icons a {
+    color: #A5FFD6;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5em;
+    border-radius: 10px;
+  }
+
+  .contact-icons a:hover {
+    color: #2DB184;
+    transform: translateY(-5px);
+    background-color: rgba(45, 177, 132, 0.1);
+  }
   
   .contact a {
     color: #A5FFD6;
@@ -287,5 +344,135 @@ body {
     font-style: italic;
     margin-bottom: 1em;
   }
-  
-  
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  nav {
+    margin-top: 1em;
+  }
+
+  nav a {
+    margin: 0 10px;
+    font-size: 0.9em;
+  }
+
+  .logo img {
+    width: 120px;
+  }
+
+  main {
+    padding: 1em;
+  }
+
+  .preview-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .timeline-container {
+    padding: 0;
+  }
+
+  .contact-icons {
+    gap: 1em;
+  }
+
+  .contact-icons a i {
+    font-size: 2em !important;
+  }
+
+  .blog-list {
+    margin: 1em auto;
+    padding: 0 1em;
+  }
+
+  .blog-list li {
+    padding: 1em;
+  }
+
+  .hero {
+    margin: 1em auto;
+    padding: 0 1em;
+  }
+
+  .hero h1 {
+    font-size: 1.8em;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.5em;
+  }
+
+  .card h3 {
+    font-size: 1.1em;
+  }
+
+  nav a {
+    display: block;
+    margin: 0.5em 0;
+  }
+}
+
+/* Improved Centering for All Content */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+/* Better spacing and typography */
+h1, h2, h3 {
+  line-height: 1.3;
+}
+
+p {
+  line-height: 1.6;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Enhanced project grid */
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2em;
+  max-width: 1000px;
+  margin: 2em auto;
+  padding: 0 1em;
+}
+
+.project {
+  background-color: #12233a;
+  padding: 1.5em;
+  border-radius: 10px;
+  border-left: 4px solid #2DB184;
+  transition: transform 0.2s;
+}
+
+.project:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.project h2 {
+  color: #2DB184;
+  margin-bottom: 0.5em;
+}
+
