@@ -4,7 +4,17 @@ class ComponentLoader {
     try {
       const componentPath = basePath ? `${basePath}/components/${componentName}.html` : `components/${componentName}.html`;
       const response = await fetch(componentPath);
-      const html = await response.text();
+      let html = await response.text();
+      
+      // Fix navigation links based on current location
+      if (basePath && componentName === 'header') {
+        html = html.replace(/href="index\.html"/g, 'href="../index.html"');
+        html = html.replace(/href="resume\.html"/g, 'href="../resume.html"');
+        html = html.replace(/href="projects\.html"/g, 'href="../projects.html"');
+        html = html.replace(/href="blog\.html"/g, 'href="../blog.html"');
+        html = html.replace(/src="assets\/images/g, 'src="../assets/images');
+      }
+      
       const target = document.querySelector(targetSelector);
       if (target) {
         target.innerHTML = html;
@@ -24,16 +34,24 @@ class ComponentLoader {
 
 // Auto-load common components when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('Loading components...');
+  
   // Determine if we're in a subdirectory
   const isSubdirectory = window.location.pathname.includes('/experience/');
   const basePath = isSubdirectory ? '..' : '';
   
-  await ComponentLoader.loadMultipleComponents([
-    { name: 'header', selector: '#header-placeholder' },
-    { name: 'footer', selector: '#footer-placeholder' },
-    { name: 'contact', selector: '#contact-placeholder' },
-    { name: 'music', selector: '#music-placeholder' }
-  ], basePath);
+  try {
+    await ComponentLoader.loadMultipleComponents([
+      { name: 'header', selector: '#header-placeholder' },
+      { name: 'footer', selector: '#footer-placeholder' },
+      { name: 'contact', selector: '#contact-placeholder' },
+      { name: 'music', selector: '#music-placeholder' }
+    ], basePath);
+    
+    console.log('All components loaded successfully');
+  } catch (error) {
+    console.error('Error loading components:', error);
+  }
 });
 
 // Utility functions

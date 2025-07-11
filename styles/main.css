@@ -3,6 +3,7 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #0A1A2F;
     color: #FFFFFF;
+    line-height: 1.6;
   }
   
   header {
@@ -12,6 +13,8 @@ body {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 1000;
   }
   
   
@@ -157,18 +160,6 @@ body {
     transform: scale(1.05);
     box-shadow: 0 6px 16px rgba(0,0,0,0.6);
   }
-  
-
-  .video-intro {
-    text-align: center;
-    margin: 2em 0;
-  }
-  
-  .video-intro h2 {
-    color: #2DB184;
-    margin-bottom: 1em;
-  }
-  
 
   .timeline {
     background-color: #12233a;
@@ -328,22 +319,103 @@ body {
 
 
   .music {
-    background-color: #12233a;
-    padding: 2em;
-    border-radius: 10px;
-    margin: 2em auto;
+    background: linear-gradient(135deg, #12233a 0%, #1a2f47 100%);
+    padding: 3em 2em;
+    border-radius: 15px;
+    margin: 3em auto;
+    max-width: 900px;
     text-align: center;
     color: #A5FFD6;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border: 1px solid rgba(45, 177, 132, 0.2);
+  }
+  
+  .music-header {
+    margin-bottom: 2em;
   }
   
   .music h2 {
     color: #2DB184;
     margin-bottom: 0.5em;
+    font-size: 1.8em;
+    font-weight: 600;
   }
+  
   .music p {
     font-style: italic;
-    margin-bottom: 1em;
+    margin-bottom: 0;
+    color: #A5FFD6;
+    opacity: 0.9;
+    font-size: 1.1em;
   }
+  
+  .music-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+    background: rgba(10, 26, 47, 0.5);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .music-player iframe {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .music-player iframe:hover {
+    transform: scale(1.02);
+  }
+
+  /* Music section mobile responsiveness */
+  .music {
+    margin: 2em auto;
+    padding: 2em 1em;
+  }
+
+  .music h2 {
+    font-size: 1.5em;
+  }
+
+  .music-player {
+    padding: 0.5em;
+  }
+
+  .music-player iframe {
+    height: 150px !important;
+  }
+
+/* Section spacing improvements */
+section {
+  margin-bottom: 3em;
+}
+
+section:last-child {
+  margin-bottom: 0;
+}
+
+/* Improved hero section */
+.hero h1 {
+  color: #2DB184;
+  font-size: 2.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+/* Better visual separation */
+.about-me, .timeline, .testimonial {
+  border-radius: 10px;
+  margin: 3em auto;
+  max-width: 1200px;
+}
+
+/* Timeline improvements */
+.timeline {
+  margin: 3em auto;
+  max-width: 1000px;
+}
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
@@ -412,6 +484,24 @@ body {
   .skills-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Music section mobile responsiveness */
+  .music {
+    margin: 2em auto;
+    padding: 2em 1em;
+  }
+
+  .music h2 {
+    font-size: 1.5em;
+  }
+
+  .music-player {
+    padding: 0.5em;
+  }
+
+  .music-player iframe {
+    height: 150px !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -474,5 +564,34 @@ p {
 .project h2 {
   color: #2DB184;
   margin-bottom: 0.5em;
+}
+
+/* Music section animations */
+.music {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.music-header h2 {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
