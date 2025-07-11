@@ -54,6 +54,125 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+// Magical effects and animations
+class MagicalEffects {
+  static initTypingEffect() {
+    const heroTitle = document.querySelector('.hero h1');
+    if (!heroTitle) return;
+
+    const originalText = heroTitle.textContent;
+    heroTitle.textContent = '';
+    
+    let index = 0;
+    const typeSpeed = 100;
+    
+    function typeWriter() {
+      if (index < originalText.length) {
+        heroTitle.textContent += originalText.charAt(index);
+        index++;
+        setTimeout(typeWriter, typeSpeed);
+      } else {
+        // Add blinking cursor
+        heroTitle.innerHTML += '<span class="cursor">|</span>';
+      }
+    }
+    
+    // Start typing after a short delay
+    setTimeout(typeWriter, 1000);
+  }
+
+  static createFloatingOrbs() {
+    const orbContainer = document.createElement('div');
+    orbContainer.className = 'floating-orbs';
+    document.body.appendChild(orbContainer);
+
+    for (let i = 0; i < 8; i++) {
+      const orb = document.createElement('div');
+      orb.className = 'floating-orb';
+      orb.style.left = Math.random() * 100 + '%';
+      orb.style.animationDelay = Math.random() * 10 + 's';
+      orb.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      orbContainer.appendChild(orb);
+    }
+  }
+
+  static initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .timeline-item, .about-me, .testimonial').forEach(el => {
+      observer.observe(el);
+    });
+  }
+
+  static createSparkleEffect(element) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = Math.random() * element.offsetWidth + 'px';
+    sparkle.style.top = Math.random() * element.offsetHeight + 'px';
+    element.appendChild(sparkle);
+
+    setTimeout(() => {
+      sparkle.remove();
+    }, 1000);
+  }
+
+  static initCardSparkles() {
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            this.createSparkleEffect(card);
+          }, i * 100);
+        }
+      });
+    });
+  }
+
+  static createMouseTrail() {
+    const trail = [];
+    const trailLength = 8;
+
+    document.addEventListener('mousemove', (e) => {
+      trail.push({ x: e.clientX, y: e.clientY });
+      if (trail.length > trailLength) {
+        trail.shift();
+      }
+
+      const existingTrails = document.querySelectorAll('.mouse-trail');
+      existingTrails.forEach(t => t.remove());
+
+      trail.forEach((point, index) => {
+        const trailDot = document.createElement('div');
+        trailDot.className = 'mouse-trail';
+        trailDot.style.left = point.x + 'px';
+        trailDot.style.top = point.y + 'px';
+        trailDot.style.opacity = (index + 1) / trailLength;
+        trailDot.style.transform = `scale(${(index + 1) / trailLength})`;
+        document.body.appendChild(trailDot);
+
+        setTimeout(() => trailDot.remove(), 500);
+      });
+    });
+  }
+}
+
+// Initialize all magical effects when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    MagicalEffects.initTypingEffect();
+    MagicalEffects.createFloatingOrbs();
+    MagicalEffects.initScrollAnimations();
+    MagicalEffects.initCardSparkles();
+    MagicalEffects.createMouseTrail();
+  }, 500);
+});
+
 // Utility functions
 const Utils = {
   // Smooth scroll to section
