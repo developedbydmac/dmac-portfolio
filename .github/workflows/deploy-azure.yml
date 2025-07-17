@@ -1,0 +1,241 @@
+name: 🚀 Deploy D Mac Portfolio to Azure
+
+on:
+  push:
+    branches: [ main, master ]
+    paths: 
+      - '**.html'
+      - '**.css' 
+      - '**.js'
+      - 'assets/**'
+      - 'devops/azure/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'devops/azure/**'
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP || 'dmac-portfolio-rg' }}
+  AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+  AZURE_CDN_PROFILE: ${{ secrets.AZURE_CDN_PROFILE }}
+  AZURE_CDN_ENDPOINT: ${{ secrets.AZURE_CDN_ENDPOINT }}
+
+jobs:
+  # Job 1: Build and Test
+  build-and-test:
+    name: 🔨 Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Validate HTML files
+      run: |
+        echo "🔍 Validating HTML structure..."
+        
+        # Check if required files exist
+        required_files=("index.html" "resume.html" "projects.html" "blog.html")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Required file $file is missing"
+            exit 1
+          else
+            echo "✅ Found $file"
+          fi
+        done
+        
+    - name: 🎨 Check CSS files
+      run: |
+        echo "🎨 Checking CSS files..."
+        if [ -f "styles/main.css" ]; then
+          echo "✅ Found main CSS file"
+        else
+          echo "⚠️  Warning: No main CSS file found"
+        fi
+        
+    - name: 📦 Create deployment package
+      run: |
+        echo "📦 Creating deployment package..."
+        
+        # Create a clean build directory
+        mkdir -p build
+        
+        # Copy all necessary files
+        cp *.html build/ 2>/dev/null || echo "No HTML files in root"
+        
+        # Copy directories
+        [ -d "assets" ] && cp -r assets build/
+        [ -d "styles" ] && cp -r styles build/
+        [ -d "scripts" ] && cp -r scripts build/
+        [ -d "components" ] && cp -r components build/
+        [ -d "experience" ] && cp -r experience build/
+        
+        # Create Azure-specific content
+        cat > build/azure-info.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Azure Deployment Info | D Mac Portfolio</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #0078d4, #106ebe); color: white; }
+            .container { max-width: 600px; margin: 0 auto; }
+            h1 { color: #fff; margin-bottom: 30px; }
+            .azure-badge { background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin: 20px 0; }
+            a { color: #fff; text-decoration: none; font-weight: bold; }
+            a:hover { text-decoration: underline; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🔷 Azure Deployment</h1>
+            <div class="azure-badge">
+              <h3>Hosted on Microsoft Azure</h3>
+              <p>This portfolio is powered by Azure Storage Static Websites with Azure CDN for global performance.</p>
+              <p><strong>Features:</strong></p>
+              <ul style="text-align: left;">
+                <li>Azure Storage Account with $web container</li>
+                <li>Azure CDN for global content delivery</li>
+                <li>Managed SSL certificates</li>
+                <li>99.9% uptime SLA</li>
+              </ul>
+            </div>
+            <a href="/">← Back to Portfolio</a>
+          </div>
+        </body>
+        </html>
+        EOF
+        
+        echo "✅ Build package created"
+        
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: portfolio-build-azure
+        path: build/
+        retention-days: 7
+
+  # Job 2: Deploy to Azure (only on main/master branch)
+  deploy:
+    name: 🔷 Deploy to Azure
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: portfolio-build-azure
+        path: build/
+        
+    - name: 🔧 Configure Azure credentials
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: 📤 Deploy to Azure Storage
+      run: |
+        echo "📤 Deploying to Azure Storage Account: $AZURE_STORAGE_ACCOUNT"
+        
+        # Sync files to Azure Storage $web container
+        az storage blob upload-batch \
+          --destination '$web' \
+          --source build/ \
+          --account-name $AZURE_STORAGE_ACCOUNT \
+          --overwrite \
+          --content-cache-control "public, max-age=3600"
+          
+        # Set longer cache for static assets
+        if [ -d "build/assets" ]; then
+          az storage blob upload-batch \
+            --destination '$web/assets' \
+            --source build/assets/ \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --overwrite \
+            --content-cache-control "public, max-age=31536000"
+        fi
+        
+        # Set shorter cache for HTML files
+        az storage blob upload-batch \
+          --destination '$web' \
+          --source build/ \
+          --pattern "*.html" \
+          --account-name $AZURE_STORAGE_ACCOUNT \
+          --overwrite \
+          --content-cache-control "public, max-age=300"
+          
+        echo "✅ Azure Storage deployment completed"
+        
+    - name: 🔄 Purge Azure CDN cache
+      if: env.AZURE_CDN_PROFILE != '' && env.AZURE_CDN_ENDPOINT != ''
+      run: |
+        echo "🔄 Purging Azure CDN cache..."
+        
+        az cdn endpoint purge \
+          --resource-group $AZURE_RESOURCE_GROUP \
+          --profile-name $AZURE_CDN_PROFILE \
+          --name $AZURE_CDN_ENDPOINT \
+          --content-paths "/*"
+          
+        echo "✅ Azure CDN cache purged"
+        echo "🕐 Cache purge may take 5-15 minutes to complete globally"
+        
+    - name: 🌐 Get website URL
+      run: |
+        echo "🌐 Deployment completed successfully!"
+        
+        # Get storage account website endpoint
+        website_url=$(az storage account show \
+          --name $AZURE_STORAGE_ACCOUNT \
+          --resource-group $AZURE_RESOURCE_GROUP \
+          --query "primaryEndpoints.web" \
+          --output tsv)
+          
+        echo "🚀 Your portfolio is now live at:"
+        echo "   Storage: $website_url"
+        
+        if [ -n "$AZURE_CDN_ENDPOINT" ]; then
+          echo "   CDN: https://$AZURE_CDN_ENDPOINT.azureedge.net"
+        fi
+        
+        echo ""
+        echo "🔷 D Mac Portfolio Azure deployment complete! 🔷"
+
+  # Job 3: Lighthouse Performance Check (optional)
+  lighthouse:
+    name: 🔍 Lighthouse Performance Check
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configure Azure credentials
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: 🌐 Get website URL
+      id: get-url
+      run: |
+        website_url=$(az storage account show \
+          --name $AZURE_STORAGE_ACCOUNT \
+          --resource-group $AZURE_RESOURCE_GROUP \
+          --query "primaryEndpoints.web" \
+          --output tsv)
+        echo "website_url=$website_url" >> $GITHUB_OUTPUT
+        
+    - name: 🔍 Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        urls: |
+          ${{ steps.get-url.outputs.website_url }}
+        budgetPath: .lighthousebudget.json
+        uploadArtifacts: true
+        temporaryPublicStorage: true

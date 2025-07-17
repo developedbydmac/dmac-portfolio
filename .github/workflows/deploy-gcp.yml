@@ -1,0 +1,243 @@
+name: 🚀 Deploy D Mac Portfolio to GCP
+
+on:
+  push:
+    branches: [ main, master ]
+    paths: 
+      - '**.html'
+      - '**.css' 
+      - '**.js'
+      - 'assets/**'
+      - 'devops/gcp/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'devops/gcp/**'
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
+  GCP_BACKEND_BUCKET: ${{ secrets.GCP_BACKEND_BUCKET }}
+
+jobs:
+  # Job 1: Build and Test
+  build-and-test:
+    name: 🔨 Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Validate HTML files
+      run: |
+        echo "🔍 Validating HTML structure..."
+        
+        # Check if required files exist
+        required_files=("index.html" "resume.html" "projects.html" "blog.html")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Required file $file is missing"
+            exit 1
+          else
+            echo "✅ Found $file"
+          fi
+        done
+        
+    - name: 🎨 Check CSS files
+      run: |
+        echo "🎨 Checking CSS files..."
+        if [ -f "styles/main.css" ]; then
+          echo "✅ Found main CSS file"
+        else
+          echo "⚠️  Warning: No main CSS file found"
+        fi
+        
+    - name: 📦 Create deployment package
+      run: |
+        echo "📦 Creating deployment package..."
+        
+        # Create a clean build directory
+        mkdir -p build
+        
+        # Copy all necessary files
+        cp *.html build/ 2>/dev/null || echo "No HTML files in root"
+        
+        # Copy directories
+        [ -d "assets" ] && cp -r assets build/
+        [ -d "styles" ] && cp -r styles build/
+        [ -d "scripts" ] && cp -r scripts build/
+        [ -d "components" ] && cp -r components build/
+        [ -d "experience" ] && cp -r experience build/
+        
+        # Create GCP-specific content
+        cat > build/gcp-info.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>GCP Deployment Info | D Mac Portfolio</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335); color: white; }
+            .container { max-width: 600px; margin: 0 auto; }
+            h1 { color: #fff; margin-bottom: 30px; }
+            .gcp-badge { background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin: 20px 0; }
+            a { color: #fff; text-decoration: none; font-weight: bold; }
+            a:hover { text-decoration: underline; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🟡 GCP Deployment</h1>
+            <div class="gcp-badge">
+              <h3>Powered by Google Cloud Platform</h3>
+              <p>This portfolio leverages Google Cloud's modern infrastructure for optimal performance and cost-efficiency.</p>
+              <p><strong>Features:</strong></p>
+              <ul style="text-align: left;">
+                <li>Cloud Storage for static hosting</li>
+                <li>Cloud CDN with global edge caching</li>
+                <li>Load Balancer with SSL termination</li>
+                <li>Best price-to-performance ratio</li>
+                <li>Carbon-neutral hosting</li>
+              </ul>
+            </div>
+            <a href="/">← Back to Portfolio</a>
+          </div>
+        </body>
+        </html>
+        EOF
+        
+        echo "✅ Build package created"
+        
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: portfolio-build-gcp
+        path: build/
+        retention-days: 7
+
+  # Job 2: Deploy to GCP (only on main/master branch)
+  deploy:
+    name: 🟡 Deploy to GCP
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: portfolio-build-gcp
+        path: build/
+        
+    - name: 🔧 Configure GCP credentials
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        
+    - name: 🔧 Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.GCP_PROJECT_ID }}
+        
+    - name: 📤 Deploy to Cloud Storage
+      run: |
+        echo "📤 Deploying to GCS bucket: $GCP_BUCKET_NAME"
+        
+        # Sync files to Cloud Storage with proper cache headers
+        gsutil -m rsync -r -d build/ gs://$GCP_BUCKET_NAME/
+        
+        # Set cache control for different file types
+        # Long cache for assets
+        gsutil -m setmeta -h "Cache-Control:public, max-age=31536000" gs://$GCP_BUCKET_NAME/assets/**
+        gsutil -m setmeta -h "Cache-Control:public, max-age=31536000" gs://$GCP_BUCKET_NAME/styles/**
+        gsutil -m setmeta -h "Cache-Control:public, max-age=31536000" gs://$GCP_BUCKET_NAME/scripts/**
+        
+        # Short cache for HTML files
+        gsutil -m setmeta -h "Cache-Control:public, max-age=300" gs://$GCP_BUCKET_NAME/*.html
+        
+        # Set proper content types
+        gsutil -m setmeta -h "Content-Type:text/html" gs://$GCP_BUCKET_NAME/*.html
+        gsutil -m setmeta -h "Content-Type:text/css" gs://$GCP_BUCKET_NAME/styles/*.css
+        gsutil -m setmeta -h "Content-Type:application/javascript" gs://$GCP_BUCKET_NAME/scripts/*.js
+        
+        echo "✅ Cloud Storage deployment completed"
+        
+    - name: 🔄 Invalidate CDN cache
+      if: env.GCP_BACKEND_BUCKET != ''
+      run: |
+        echo "🔄 Invalidating Cloud CDN cache..."
+        
+        # Get the URL map name (assuming it follows our naming convention)
+        URL_MAP_NAME=$(gcloud compute url-maps list --filter="name:*dmac-portfolio*" --format="value(name)" | head -1)
+        
+        if [ -n "$URL_MAP_NAME" ]; then
+          # Invalidate cache for the backend bucket
+          gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*" --async
+          echo "✅ CDN cache invalidation initiated"
+          echo "🕐 Cache invalidation may take 5-15 minutes to complete globally"
+        else
+          echo "⚠️  Could not find URL map for cache invalidation"
+        fi
+        
+    - name: 🌐 Get website URL
+      run: |
+        echo "🌐 Deployment completed successfully!"
+        
+        # Get load balancer IP
+        LB_IP=$(gcloud compute addresses list --filter="name:*dmac-portfolio*" --format="value(address)" | head -1)
+        
+        echo "🚀 Your portfolio is now live at:"
+        echo "   Storage: https://storage.googleapis.com/$GCP_BUCKET_NAME/index.html"
+        
+        if [ -n "$LB_IP" ]; then
+          echo "   Load Balancer: https://$LB_IP"
+        fi
+        
+        echo ""
+        echo "🟡 D Mac Portfolio GCP deployment complete! 🟡"
+        echo "💰 Estimated cost: $1-8/month (most cost-effective option)"
+
+  # Job 3: Lighthouse Performance Check (optional)
+  lighthouse:
+    name: 🔍 Lighthouse Performance Check
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configure GCP credentials
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        
+    - name: 🔧 Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.GCP_PROJECT_ID }}
+        
+    - name: 🌐 Get website URL
+      id: get-url
+      run: |
+        # Try to get load balancer IP first, fall back to storage
+        LB_IP=$(gcloud compute addresses list --filter="name:*dmac-portfolio*" --format="value(address)" | head -1)
+        
+        if [ -n "$LB_IP" ]; then
+          echo "website_url=https://$LB_IP" >> $GITHUB_OUTPUT
+        else
+          echo "website_url=https://storage.googleapis.com/$GCP_BUCKET_NAME/index.html" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: 🔍 Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        urls: |
+          ${{ steps.get-url.outputs.website_url }}
+        budgetPath: .lighthousebudget.json
+        uploadArtifacts: true
+        temporaryPublicStorage: true

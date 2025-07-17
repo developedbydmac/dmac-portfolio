@@ -1,0 +1,29 @@
+# Example terraform.tfvars file for D Mac Portfolio
+# Copy this file to terraform.tfvars and customize the values
+
+# AWS Configuration
+aws_region = "us-east-1"
+environment = "prod"
+
+# Project Configuration
+project_name = "dmac-portfolio"
+
+# Domain Configuration (optional)
+# Uncomment and set your domain if you have one
+# domain_name = "dmac.dev"
+
+# CloudFront Configuration
+enable_ipv6 = true
+price_class = "PriceClass_100"  # Use PriceClass_All for global distribution
+cache_default_ttl = 3600        # 1 hour
+cache_max_ttl = 86400           # 24 hours
+
+# Logging
+enable_logging = false
+
+# Additional Tags
+tags = {
+  "Creator"     = "D Mac"
+  "ProjectType" = "Portfolio"
+  "Technology"  = "Static Website"
+}

@@ -1,0 +1,67 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:8000"],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "categories:performance": ["warn", {"minScore": 0.8}],
+        "categories:accessibility": ["error", {"minScore": 0.9}],
+        "categories:best-practices": ["warn", {"minScore": 0.8}],
+        "categories:seo": ["warn", {"minScore": 0.8}]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  },
+  "budgets": [
+    {
+      "path": "/*",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 2000
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 4000
+        },
+        {
+          "metric": "cumulative-layout-shift",
+          "budget": 0.1
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 300
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "total",
+          "budget": 1024
+        },
+        {
+          "resourceType": "script",
+          "budget": 256
+        },
+        {
+          "resourceType": "image",
+          "budget": 512
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 128
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "third-party",
+          "budget": 5
+        }
+      ]
+    }
+  ]
+}

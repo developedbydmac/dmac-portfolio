@@ -1,0 +1,32 @@
+# Example terraform.tfvars file for D Mac Portfolio GCP
+# Copy this file to terraform.tfvars and customize the values
+
+# GCP Configuration
+project_id = "dmac-portfolio-12345"  # Replace with your GCP project ID
+region     = "us-central1"
+zone       = "us-central1-a"
+
+# Project Configuration
+project_name = "dmac-portfolio"
+environment  = "prod"
+
+# Storage Configuration
+bucket_location = "US"  # US, EU, ASIA, or specific region
+
+# Domain Configuration (optional)
+# Uncomment and set your domain if you have one
+# domain_name = "dmac.dev"
+
+# CDN and Performance
+enable_cdn         = true
+cache_max_age      = 86400
+enable_compression = true
+ssl_policy         = "MODERN"
+
+# Additional Labels
+tags = {
+  "creator"      = "d-mac"
+  "project-type" = "portfolio"
+  "technology"   = "static-website"
+  "cloud"        = "gcp"
+}
