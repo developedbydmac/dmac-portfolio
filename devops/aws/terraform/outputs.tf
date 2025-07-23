@@ -1,93 +1,22 @@
-# Outputs for D Mac Portfolio Infrastructure
-
-output "s3_bucket_name" {
-  description = "Name of the S3 bucket hosting the website"
-  value       = aws_s3_bucket.portfolio_bucket.bucket
+# AWS Infrastructure Outputs# Comprehensive outputs matching Azure setup# Static Website Hostingoutput "s3_bucket_name" {  description = "Name of the S3 bucket for static website hosting"  value       = aws_s3_bucket.portfolio_bucket.id}output "s3_bucket_domain_name" {  description = "Domain name of the S3 bucket"  value       = aws_s3_bucket.portfolio_bucket.bucket_domain_name}output "s3_website_endpoint" {  description = "Website endpoint for the S3 bucket"  value       = aws_s3_bucket_website_configuration.portfolio_website.website_endpoint}# CloudFront CDNoutput "cloudfront_distribution_id" {  description = "ID of the CloudFront distribution"  value       = aws_cloudfront_distribution.portfolio_distribution.id}output "cloudfront_domain_name" {  description = "Domain name of the CloudFront distribution"  value       = aws_cloudfront_distribution.portfolio_distribution.domain_name}output "cloudfront_hosted_zone_id" {  description = "CloudFront distribution hosted zone ID"  value       = aws_cloudfront_distribution.portfolio_distribution.hosted_zone_id}output "website_url" {  description = "Main website URL via CloudFront"  value       = "https://${aws_cloudfront_distribution.portfolio_distribution.domain_name}"}# API Gatewayoutput "api_gateway_url" {  description = "Base URL for the API Gateway"  value       = aws_api_gateway_deployment.portfolio_deployment.invoke_url}output "api_gateway_id" {  description = "ID of the API Gateway"  value       = aws_api_gateway_rest_api.portfolio_api.id}# Lambda Functionsoutput "visits_function_name" {  description = "Name of the visits Lambda function"  value       = aws_lambda_function.visits_function.function_name}output "visits_function_arn" {  description = "ARN of the visits Lambda function"  value       = aws_lambda_function.visits_function.arn}output "contact_function_name" {  description = "Name of the contact Lambda function"  value       = aws_lambda_function.contact_function.function_name}output "contact_function_arn" {  description = "ARN of the contact Lambda function"  value       = aws_lambda_function.contact_function.arn}# DynamoDB Databaseoutput "dynamodb_table_name" {  description = "Name of the DynamoDB table"  value       = aws_dynamodb_table.portfolio_db.name}output "dynamodb_table_arn" {  description = "ARN of the DynamoDB table"  value       = aws_dynamodb_table.portfolio_db.arn}# Secrets Manageroutput "secrets_manager_secret_name" {  description = "Name of the Secrets Manager secret"  value       = aws_secretsmanager_secret.portfolio_secrets.name}output "secrets_manager_secret_arn" {  description = "ARN of the Secrets Manager secret"  value       = aws_secretsmanager_secret.portfolio_secrets.arn}
+# CloudWatch
+output "cloudwatch_dashboard_url" {
+  description = "URL to the CloudWatch dashboard"
+  value       = "https://console.aws.amazon.com/cloudwatch/home?region=${data.aws_region.current.name}#dashboards:name=${aws_cloudwatch_dashboard.portfolio_dashboard.dashboard_name}"
 }
 
-output "s3_bucket_arn" {
-  description = "ARN of the S3 bucket"
-  value       = aws_s3_bucket.portfolio_bucket.arn
+# Resource Information
+output "resource_group_name" {
+  description = "AWS resource group equivalent (using tags)"
+  value       = "Project:dmac-portfolio,Environment:${var.environment}"
 }
 
-output "s3_website_endpoint" {
-  description = "S3 website endpoint"
-  value       = aws_s3_bucket_website_configuration.portfolio_website.website_endpoint
+output "deployment_region" {
+  description = "AWS region where resources are deployed"
+  value       = data.aws_region.current.name
 }
 
-output "cloudfront_distribution_id" {
-  description = "CloudFront distribution ID"
-  value       = aws_cloudfront_distribution.portfolio_distribution.id
-}
-
-output "cloudfront_domain_name" {
-  description = "CloudFront distribution domain name"
-  value       = aws_cloudfront_distribution.portfolio_distribution.domain_name
-}
-
-output "cloudfront_distribution_arn" {
-  description = "CloudFront distribution ARN"
-  value       = aws_cloudfront_distribution.portfolio_distribution.arn
-}
-
-output "website_url" {
-  description = "Website URL"
-  value       = var.domain_name != "" ? "https://${var.domain_name}" : "https://${aws_cloudfront_distribution.portfolio_distribution.domain_name}"
-}
-
-output "route53_zone_id" {
-  description = "Route53 hosted zone ID"
-  value       = var.domain_name != "" ? aws_route53_zone.portfolio_zone[0].zone_id : null
-}
-
-output "route53_name_servers" {
-  description = "Route53 name servers"
-  value       = var.domain_name != "" ? aws_route53_zone.portfolio_zone[0].name_servers : null
-}
-
-output "acm_certificate_arn" {
-  description = "ACM certificate ARN"
-  value       = var.domain_name != "" ? aws_acm_certificate.portfolio_cert[0].arn : null
-}
-
-output "github_actions_user_arn" {
-  description = "GitHub Actions IAM user ARN"
-  value       = aws_iam_user.github_actions.arn
-}
-
-output "github_actions_access_key_id" {
-  description = "GitHub Actions access key ID"
-  value       = aws_iam_access_key.github_actions_key.id
-  sensitive   = true
-}
-
-output "github_actions_secret_access_key" {
-  description = "GitHub Actions secret access key"
-  value       = aws_iam_access_key.github_actions_key.secret
-  sensitive   = true
-}
-
-output "deployment_instructions" {
-  description = "Instructions for setting up GitHub Actions secrets"
-  value = <<-EOT
-    
-    🚀 D Mac Portfolio Deployment Setup Complete!
-    
-    Next Steps:
-    1. Add these secrets to your GitHub repository:
-       - AWS_ACCESS_KEY_ID: ${aws_iam_access_key.github_actions_key.id}
-       - AWS_SECRET_ACCESS_KEY: ${aws_iam_access_key.github_actions_key.secret}
-       - AWS_REGION: ${var.aws_region}
-       - S3_BUCKET: ${aws_s3_bucket.portfolio_bucket.bucket}
-       - CLOUDFRONT_DISTRIBUTION_ID: ${aws_cloudfront_distribution.portfolio_distribution.id}
-    
-    2. Your website will be available at:
-       ${var.domain_name != "" ? "https://${var.domain_name}" : "https://${aws_cloudfront_distribution.portfolio_distribution.domain_name}"}
-    
-    3. If using a custom domain, update your domain's nameservers to:
-       ${var.domain_name != "" ? join(", ", aws_route53_zone.portfolio_zone[0].name_servers) : "N/A - No custom domain configured"}
-    
-    4. Push to your main branch to trigger the deployment pipeline!
-    
-  EOT
+output "resource_token" {
+  description = "Unique resource token for naming"
+  value       = local.resource_token
 }

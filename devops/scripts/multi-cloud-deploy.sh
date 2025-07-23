@@ -1,7 +1,29 @@
 #!/bin/bash
 
-# D Mac Portfolio - Multi-Cloud Development & Deployment Script
-# This script helps with local development and deployment to AWS, Azure, and GCP
+# Multi-Cloud Deployment Script for DMac Portfolio
+# Deploys to AWS, Azure, and GCP simultaneously with enhanced Azure support
+
+#!/bin/bash
+
+set -euo pipefail
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+PROJECT_NAME="dmac-portfolio"
+ENVIRONMENT="${ENVIRONMENT:-prod}"
+AWS_REGION="${AWS_REGION:-us-east-1}"
+AZURE_LOCATION="${AZURE_LOCATION:-eastus2}"
+GCP_REGION="${GCP_REGION:-us-east1}"
+
+echo -e "${BLUE}🚀 Starting Multi-Cloud Deployment for DMac Portfolio${NC}"
+echo -e "${BLUE}Environment: ${ENVIRONMENT}${NC}"
+echo -e "${BLUE}Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")${NC}"
 
 set -e  # Exit on any error
 

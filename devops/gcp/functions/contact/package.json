@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-contact-function",
+  "version": "1.0.0",
+  "description": "GCP Cloud Function for contact form handling",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/firestore": "^7.1.0"
+  },
+  "engines": {
+    "node": "18"
+  }
+}

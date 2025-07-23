@@ -50,6 +50,13 @@ variable "enable_cdn" {
   default     = true
 }
 
+variable "firestore_location" {
+  description = "Location for Firestore database"
+  type        = string
+  default     = "nam5"
+  # Options: nam5 (North America), eur3 (Europe), asia-southeast1, etc.
+}
+
 variable "ssl_policy" {
   description = "SSL policy for HTTPS load balancer"
   type        = string

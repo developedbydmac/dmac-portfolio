@@ -1,258 +1,334 @@
-// D Mac Portfolio - Azure Infrastructure using Bicep
-// This template creates Azure resources for hosting a static portfolio website
+@description('Name of the portfolio site')
+param siteName string = 'dmac-portfolio'
 
-targetScope = 'resourceGroup'
-
-@description('Name of the project')
-param projectName string = 'dmac-portfolio'
-
-@description('Environment name (e.g., dev, staging, prod)')
-param environment string = 'prod'
-
-@description('Azure region for resources')
+@description('Location for all resources')
 param location string = resourceGroup().location
+
+@description('GitHub repository URL')
+param repositoryUrl string = 'https://github.com/developedbydmac/dmac-portfolio'
+
+@description('GitHub branch to deploy from')
+param branch string = 'main'
 
 @description('Custom domain name (optional)')
 param customDomain string = ''
 
-@description('Enable CDN endpoint')
-param enableCdn bool = true
-
-@description('Storage account tier')
-@allowed(['Standard_LRS', 'Standard_GRS', 'Standard_RAGRS'])
-param storageAccountType string = 'Standard_LRS'
+@description('Environment name')
+param environment string = 'prod'
 
 // Variables
-var resourceSuffix = uniqueString(resourceGroup().id)
-var storageAccountName = '${projectName}${environment}${resourceSuffix}'
-var cdnProfileName = '${projectName}-${environment}-cdn'
-var cdnEndpointName = '${projectName}-${environment}-endpoint'
+var resourceToken = toLower(uniqueString(subscription().id, resourceGroup().id, location))
+var staticWebAppName = '${siteName}-swa-${resourceToken}'
+var functionAppName = '${siteName}-functions-${resourceToken}'
+var cosmosAccountName = '${siteName}-cosmos-${resourceToken}'
+var storageAccountName = '${siteName}storage${resourceToken}'
+var appInsightsName = '${siteName}-insights-${resourceToken}'
+var keyVaultName = '${siteName}-kv-${resourceToken}'
+var managedIdentityName = '${siteName}-identity-${resourceToken}'
 
 // Common tags
 var commonTags = {
-  Project: projectName
   Environment: environment
+  Project: 'DMac Portfolio'
+  'azd-env-name': environment
   ManagedBy: 'bicep'
   Owner: 'D Mac'
-  CloudProvider: 'azure'
 }
 
-// Storage Account for static website hosting
+// Managed Identity
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: managedIdentityName
+  location: location
+  tags: commonTags
+}
+
+// Storage Account for Azure Functions
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
   location: location
-  tags: commonTags
   sku: {
-    name: storageAccountType
+    name: 'Standard_LRS'
   }
   kind: 'StorageV2'
   properties: {
     accessTier: 'Hot'
-    allowBlobPublicAccess: true
-    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    allowSharedKeyAccess: true
     minimumTlsVersion: 'TLS1_2'
-    encryption: {
-      services: {
-        blob: {
-          enabled: true
-        }
-        file: {
-          enabled: true
-        }
+    supportsHttpsTrafficOnly: true
+    networkAcls: {
+      defaultAction: 'Allow'
+    }
+  }
+  tags: commonTags
+}
+
+// Application Insights
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+    RetentionInDays: 90
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+  tags: commonTags
+}
+
+// Key Vault
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: keyVaultName
+  location: location
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+    enableRbacAuthorization: true
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 7
+    enablePurgeProtection: false
+    networkAcls: {
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
+    }
+  }
+  tags: commonTags
+}
+
+// Cosmos DB Account
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-04-15' = {
+  name: cosmosAccountName
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
       }
-      keySource: 'Microsoft.Storage'
+    ]
+    databaseAccountOfferType: 'Standard'
+    enableAutomaticFailover: false
+    enableMultipleWriteLocations: false
+    capabilities: [
+      {
+        name: 'EnableServerless'
+      }
+    ]
+    publicNetworkAccess: 'Enabled'
+    networkAclBypass: 'AzureServices'
+    disableKeyBasedMetadataWriteAccess: false
+  }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  tags: commonTags
+}
+
+// Cosmos DB Database
+resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-04-15' = {
+  parent: cosmosAccount
+  name: 'PortfolioDB'
+  properties: {
+    resource: {
+      id: 'PortfolioDB'
     }
   }
 }
 
-// Enable static website hosting
-resource staticWebsite 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
-  parent: storageAccount
-  name: 'default'
+// Cosmos DB Containers
+resource visitorCountContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-04-15' = {
+  parent: cosmosDatabase
+  name: 'VisitorCount'
   properties: {
-    cors: {
-      corsRules: [
+    resource: {
+      id: 'VisitorCount'
+      partitionKey: {
+        paths: ['/id']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+resource contactMessagesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-04-15' = {
+  parent: cosmosDatabase
+  name: 'ContactMessages'
+  properties: {
+    resource: {
+      id: 'ContactMessages'
+      partitionKey: {
+        paths: ['/id']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+// App Service Plan for Functions
+resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
+  name: '${functionAppName}-plan'
+  location: location
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+  properties: {
+    reserved: false
+  }
+  tags: commonTags
+}
+
+// Azure Functions App
+resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
+  name: functionAppName
+  location: location
+  kind: 'functionapp'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
+      cors: {
+        allowedOrigins: ['*']
+        supportCredentials: false
+      }
+      appSettings: [
         {
-          allowedOrigins: ['*']
-          allowedMethods: ['GET', 'HEAD', 'OPTIONS']
-          allowedHeaders: ['*']
-          exposedHeaders: ['*']
-          maxAgeInSeconds: 3600
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${az.environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${az.environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower(functionAppName)
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'node'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~18'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: applicationInsights.properties.ConnectionString
+        }
+        {
+          name: 'COSMOS_DB_ENDPOINT'
+          value: cosmosAccount.properties.documentEndpoint
+        }
+        {
+          name: 'COSMOS_DB_KEY'
+          value: cosmosAccount.listKeys().primaryMasterKey
         }
       ]
     }
   }
-}
-
-// $web container for static website
-resource webContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
-  parent: staticWebsite
-  name: '$web'
-  properties: {
-    publicAccess: 'Blob'
-  }
-}
-
-// CDN Profile
-resource cdnProfile 'Microsoft.Cdn/profiles@2023-05-01' = if (enableCdn) {
-  name: cdnProfileName
-  location: 'Global'
   tags: commonTags
+}
+
+// Static Web App
+resource staticWebApp 'Microsoft.Web/staticSites@2023-01-01' = {
+  name: staticWebAppName
+  location: location
   sku: {
-    name: 'Standard_Microsoft'
+    name: 'Standard'
+    tier: 'Standard'
   }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    repositoryUrl: repositoryUrl
+    branch: branch
+    buildProperties: {
+      appLocation: '/'
+      apiLocation: 'api'
+      outputLocation: ''
+    }
+    allowConfigFileUpdates: true
+    enterpriseGradeCdnStatus: 'Enabled'
+    stagingEnvironmentPolicy: 'Enabled'
+  }
+  tags: commonTags
+}
+
+// Custom Domain (if provided)
+resource customDomainResource 'Microsoft.Web/staticSites/customDomains@2023-01-01' = if (!empty(customDomain)) {
+  parent: staticWebApp
+  name: customDomain
   properties: {}
 }
 
-// CDN Endpoint
-resource cdnEndpoint 'Microsoft.Cdn/profiles/endpoints@2023-05-01' = if (enableCdn) {
-  parent: cdnProfile
-  name: cdnEndpointName
-  location: 'Global'
-  tags: commonTags
+// Role Assignments
+resource cosmosDbDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: cosmosAccount
+  name: guid(cosmosAccount.id, managedIdentity.id, 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
   properties: {
-    originHostHeader: '${storageAccountName}.z13.web.${az.environment().suffixes.storage}'
-    isHttpAllowed: false
-    isHttpsAllowed: true
-    queryStringCachingBehavior: 'IgnoreQueryString'
-    origins: [
-      {
-        name: 'origin1'
-        properties: {
-          hostName: '${storageAccountName}.z13.web.${az.environment().suffixes.storage}'
-          httpPort: 80
-          httpsPort: 443
-          originHostHeader: '${storageAccountName}.z13.web.${az.environment().suffixes.storage}'
-          priority: 1
-          weight: 1000
-          enabled: true
-        }
-      }
-    ]
-    deliveryPolicy: {
-      rules: [
-        {
-          name: 'Global'
-          order: 0
-          conditions: []
-          actions: [
-            {
-              name: 'CacheExpiration'
-              parameters: {
-                typeName: 'DeliveryRuleCacheExpirationActionParameters'
-                cacheBehavior: 'SetIfMissing'
-                cacheType: 'All'
-                cacheDuration: '1.00:00:00'
-              }
-            }
-            {
-              name: 'ModifyResponseHeader'
-              parameters: {
-                typeName: 'DeliveryRuleHeaderActionParameters'
-                headerAction: 'Append'
-                headerName: 'Strict-Transport-Security'
-                value: 'max-age=31536000; includeSubDomains'
-              }
-            }
-          ]
-        }
-        {
-          name: 'AssetsCache'
-          order: 1
-          conditions: [
-            {
-              name: 'UrlPath'
-              parameters: {
-                typeName: 'DeliveryRuleUrlPathMatchConditionParameters'
-                operator: 'BeginsWith'
-                matchValues: ['/assets/']
-                transforms: ['Lowercase']
-              }
-            }
-          ]
-          actions: [
-            {
-              name: 'CacheExpiration'
-              parameters: {
-                typeName: 'DeliveryRuleCacheExpirationActionParameters'
-                cacheBehavior: 'Override'
-                cacheType: 'All'
-                cacheDuration: '365.00:00:00'
-              }
-            }
-          ]
-        }
-        {
-          name: 'HtmlCache'
-          order: 2
-          conditions: [
-            {
-              name: 'UrlFileExtension'
-              parameters: {
-                typeName: 'DeliveryRuleUrlFileExtensionMatchConditionParameters'
-                operator: 'Equal'
-                matchValues: ['html', 'htm']
-                transforms: ['Lowercase']
-              }
-            }
-          ]
-          actions: [
-            {
-              name: 'CacheExpiration'
-              parameters: {
-                typeName: 'DeliveryRuleCacheExpirationActionParameters'
-                cacheBehavior: 'Override'
-                cacheType: 'All'
-                cacheDuration: '0.00:05:00'
-              }
-            }
-          ]
-        }
-      ]
-    }
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') // Cosmos DB Built-in Data Contributor
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
-// Custom domain (optional)
-resource customDomainResource 'Microsoft.Cdn/profiles/endpoints/customDomains@2023-05-01' = if (enableCdn && !empty(customDomain)) {
-  parent: cdnEndpoint
-  name: replace(customDomain, '.', '-')
+resource keyVaultSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(keyVault.id, managedIdentity.id, '4633458b-17de-408a-b874-0445c86b69e6')
   properties: {
-    hostName: customDomain
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6') // Key Vault Secrets User
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
   }
 }
-
-// Service Principal for GitHub Actions (placeholder - needs to be created separately)
-// Note: This would typically be created via Azure CLI or PowerShell
-// az ad sp create-for-rbac --name "dmac-portfolio-github-actions" --role contributor --scopes /subscriptions/{subscription-id}/resourceGroups/{resource-group}
 
 // Outputs
-output storageAccountName string = storageAccount.name
-output storageAccountWebEndpoint string = storageAccount.properties.primaryEndpoints.web
-output cdnEndpointUrl string = enableCdn ? 'https://${cdnEndpointName}.azureedge.net' : ''
-output cdnEndpointName string = enableCdn ? cdnEndpointName : ''
-output cdnProfileName string = enableCdn ? cdnProfileName : ''
+output staticWebAppName string = staticWebApp.name
+output staticWebAppDefaultHostname string = staticWebApp.properties.defaultHostname
+output staticWebAppId string = staticWebApp.id
+output functionAppName string = functionApp.name
+output functionAppHostname string = functionApp.properties.defaultHostName
+output cosmosAccountName string = cosmosAccount.name
+output cosmosAccountEndpoint string = cosmosAccount.properties.documentEndpoint
+output applicationInsightsName string = applicationInsights.name
+output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
+output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
+output keyVaultName string = keyVault.name
+output keyVaultUri string = keyVault.properties.vaultUri
+output managedIdentityName string = managedIdentity.name
+output managedIdentityId string = managedIdentity.id
 output resourceGroupName string = resourceGroup().name
-output deploymentInstructions string = '''
-
-🚀 D Mac Portfolio Azure Deployment Complete!
-
-Next Steps:
-1. Create a Service Principal for GitHub Actions:
-   az ad sp create-for-rbac --name "dmac-portfolio-github-actions" --role contributor --scopes /subscriptions/{subscription-id}/resourceGroups/{resource-group-name} --sdk-auth
-
-2. Add these secrets to your GitHub repository:
-   - AZURE_CREDENTIALS: {output from step 1}
-   - AZURE_SUBSCRIPTION_ID: {your-subscription-id}
-   - AZURE_RESOURCE_GROUP: ${resourceGroup().name}
-   - AZURE_STORAGE_ACCOUNT: ${storageAccount.name}
-   - AZURE_CDN_PROFILE: ${enableCdn ? cdnProfileName : 'N/A'}
-   - AZURE_CDN_ENDPOINT: ${enableCdn ? cdnEndpointName : 'N/A'}
-
-3. Your website will be available at:
-   Storage: ${storageAccount.properties.primaryEndpoints.web}
-   CDN: ${enableCdn ? 'https://${cdnEndpointName}.azureedge.net' : 'N/A'}
-
-4. Push to your main branch to trigger the deployment pipeline!
-
-'''

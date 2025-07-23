@@ -2,20 +2,23 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "projectName": {
+    "siteName": {
       "value": "dmac-portfolio"
+    },
+    "location": {
+      "value": "eastus2"
+    },
+    "repositoryUrl": {
+      "value": "https://github.com/developedbydmac/dmac-portfolio"
+    },
+    "branch": {
+      "value": "main"
+    },
+    "customDomain": {
+      "value": "resume.dmac.dev"
     },
     "environment": {
       "value": "prod"
-    },
-    "customDomain": {
-      "value": ""
-    },
-    "enableCdn": {
-      "value": true
-    },
-    "storageAccountType": {
-      "value": "Standard_LRS"
     }
   }
 }

@@ -1,0 +1,55 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "serve": "/index.html"
+    },
+    {
+      "route": "/projects",
+      "serve": "/projects.html"
+    },
+    {
+      "route": "/blog",
+      "serve": "/blog.html"
+    },
+    {
+      "route": "/resume",
+      "serve": "/resume.html"
+    },
+    {
+      "route": "/experience/*",
+      "serve": "/experience/"
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/api/*", "*.{css,scss,js,png,gif,ico,jpg,svg}"]
+  },
+  "mimeTypes": {
+    ".json": "application/json",
+    ".pdf": "application/pdf"
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "responseOverrides": {
+    "401": {
+      "redirect": "/unauthorized.html",
+      "statusCode": 302
+    },
+    "403": {
+      "redirect": "/forbidden.html", 
+      "statusCode": 302
+    },
+    "404": {
+      "redirect": "/404.html",
+      "statusCode": 302
+    }
+  }
+}
