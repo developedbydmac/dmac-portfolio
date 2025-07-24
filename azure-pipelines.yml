@@ -1,0 +1,223 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - README.md
+      - docs/*
+
+variables:
+  azureSubscription: 'Azure-DevOps-Service-Connection'
+  resourceGroupName: 'rg-dmac-portfolio'
+  location: 'eastus2'
+  templateFile: 'infrastructure/main.bicep'
+  parametersFile: 'infrastructure/main.parameters.json'
+
+stages:
+  - stage: ValidateInfrastructure
+    displayName: 'Validate Infrastructure'
+    jobs:
+      - job: ValidateTemplate
+        displayName: 'Validate ARM Template'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Validate Bicep Template'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az group create --name $(resourceGroupName) --location $(location) --tags Environment=Production Owner="D Mac" Project=Portfolio
+                az deployment group validate \
+                  --resource-group $(resourceGroupName) \
+                  --template-file $(templateFile) \
+                  --parameters @$(parametersFile)
+
+          - task: AzureCLI@2
+            displayName: 'Security Scan with Checkov'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                pip install checkov
+                checkov -f $(templateFile) --framework bicep --output cli
+
+  - stage: DeployInfrastructure
+    displayName: 'Deploy Infrastructure'
+    dependsOn: ValidateInfrastructure
+    condition: succeeded()
+    jobs:
+      - deployment: DeployAzureResources
+        displayName: 'Deploy Azure Resources'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: AzureCLI@2
+                  displayName: 'Deploy Infrastructure'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az deployment group create \
+                        --resource-group $(resourceGroupName) \
+                        --template-file $(templateFile) \
+                        --parameters @$(parametersFile) \
+                        --mode Incremental
+
+                - task: AzureCLI@2
+                  displayName: 'Get Deployment Outputs'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      OUTPUTS=$(az deployment group show \
+                        --resource-group $(resourceGroupName) \
+                        --name main \
+                        --query properties.outputs)
+                      
+                      echo "##vso[task.setvariable variable=deploymentOutputs;isOutput=true]$OUTPUTS"
+                  name: 'getOutputs'
+
+  - stage: DeployApplication
+    displayName: 'Deploy Application'
+    dependsOn: DeployInfrastructure
+    condition: succeeded()
+    jobs:
+      - job: BuildAndDeploy
+        displayName: 'Build and Deploy App'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: NodeTool@0
+            displayName: 'Setup Node.js'
+            inputs:
+              versionSpec: '18.x'
+
+          - task: Npm@1
+            displayName: 'Install Dependencies'
+            inputs:
+              command: 'install'
+
+          - task: AzureCLI@2
+            displayName: 'Deploy to Azure Static Web Apps'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Install Azure Static Web Apps CLI
+                npm install -g @azure/static-web-apps-cli
+                
+                # Deploy using SWA CLI
+                swa deploy \
+                  --app-location . \
+                  --api-location api \
+                  --deployment-token $(AZURE_STATIC_WEB_APPS_API_TOKEN)
+
+  - stage: PostDeploymentTests
+    displayName: 'Post-Deployment Testing'
+    dependsOn: DeployApplication
+    condition: succeeded()
+    jobs:
+      - job: HealthCheck
+        displayName: 'Application Health Check'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Health Check'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Wait for deployment to propagate
+                sleep 30
+                
+                # Basic health check
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://dmac-portfolio.azurestaticapps.net/)
+                if [ $STATUS -eq 200 ]; then
+                  echo "✅ Health check passed"
+                else
+                  echo "❌ Health check failed with status: $STATUS"
+                  exit 1
+                fi
+                
+                # API health check
+                API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://dmac-portfolio.azurestaticapps.net/api/visits)
+                if [ $API_STATUS -eq 200 ]; then
+                  echo "✅ API health check passed"
+                else
+                  echo "⚠️ API health check returned status: $API_STATUS"
+                fi
+
+          - task: AzureCLI@2
+            displayName: 'Performance Test'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Simple performance test using curl
+                echo "Running performance test..."
+                for i in {1..5}; do
+                  RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" https://dmac-portfolio.azurestaticapps.net/)
+                  echo "Response time $i: ${RESPONSE_TIME}s"
+                done
+
+  - stage: MonitoringSetup
+    displayName: 'Setup Monitoring'
+    dependsOn: PostDeploymentTests
+    condition: succeeded()
+    jobs:
+      - job: ConfigureAlerts
+        displayName: 'Configure Monitoring Alerts'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Create Application Insights Alerts'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Get Application Insights resource ID
+                APP_INSIGHTS_ID=$(az monitor app-insights component show \
+                  --app dmac-portfolio-insights \
+                  --resource-group $(resourceGroupName) \
+                  --query id -o tsv)
+                
+                # Create availability alert
+                az monitor metrics alert create \
+                  --name "DMac Portfolio - High Response Time" \
+                  --resource-group $(resourceGroupName) \
+                  --scopes $APP_INSIGHTS_ID \
+                  --condition "avg requests/duration > 2000" \
+                  --description "Alert when average response time exceeds 2 seconds" \
+                  --evaluation-frequency 5m \
+                  --window-size 15m \
+                  --severity 2
+                
+                # Create error rate alert
+                az monitor metrics alert create \
+                  --name "DMac Portfolio - High Error Rate" \
+                  --resource-group $(resourceGroupName) \
+                  --scopes $APP_INSIGHTS_ID \
+                  --condition "avg requests/failed > 5" \
+                  --description "Alert when error rate exceeds 5%" \
+                  --evaluation-frequency 5m \
+                  --window-size 15m \
+                  --severity 1

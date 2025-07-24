@@ -1,0 +1,129 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siteName": {
+      "type": "string",
+      "defaultValue": "dmac-portfolio",
+      "metadata": {
+        "description": "Name of the static web app"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus2",
+      "metadata": {
+        "description": "Location for the static web app"
+      }
+    },
+    "repositoryUrl": {
+      "type": "string",
+      "defaultValue": "https://github.com/developedbydmac/dmac-portfolio",
+      "metadata": {
+        "description": "GitHub repository URL"
+      }
+    },
+    "branch": {
+      "type": "string",
+      "defaultValue": "main",
+      "metadata": {
+        "description": "GitHub branch to deploy from"
+      }
+    }
+  },
+  "variables": {
+    "staticWebAppName": "[concat(parameters('siteName'), '-', uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('staticWebAppName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "Environment": "Production",
+        "Owner": "D Mac",
+        "Project": "Portfolio"
+      },
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard"
+      },
+      "properties": {
+        "repositoryUrl": "[parameters('repositoryUrl')]",
+        "branch": "[parameters('branch')]",
+        "buildProperties": {
+          "appLocation": "/",
+          "apiLocation": "api",
+          "outputLocation": "dist"
+        },
+        "allowConfigFileUpdates": true,
+        "enterpriseGradeCdnStatus": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Web/staticSites/customDomains",
+      "apiVersion": "2022-03-01",
+      "name": "[concat(variables('staticWebAppName'), '/resume.dmac.dev')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/staticSites', variables('staticWebAppName'))]"
+      ],
+      "properties": {
+        "domainName": "resume.dmac.dev"
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2021-04-15",
+      "name": "[concat(variables('staticWebAppName'), '-cosmos')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "Environment": "Production",
+        "Owner": "D Mac",
+        "Project": "Portfolio"
+      },
+      "kind": "GlobalDocumentDB",
+      "properties": {
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session"
+        },
+        "locations": [
+          {
+            "locationName": "[parameters('location')]",
+            "failoverPriority": 0,
+            "isZoneRedundant": false
+          }
+        ],
+        "databaseAccountOfferType": "Standard",
+        "enableAutomaticFailover": false,
+        "enableMultipleWriteLocations": false,
+        "capabilities": [
+          {
+            "name": "EnableServerless"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[concat(variables('staticWebAppName'), '-insights')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Request_Source": "rest"
+      }
+    }
+  ],
+  "outputs": {
+    "staticWebAppDefaultHostname": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Web/staticSites', variables('staticWebAppName'))).defaultHostname]"
+    },
+    "staticWebAppId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Web/staticSites', variables('staticWebAppName'))]"
+    }
+  }
+}
